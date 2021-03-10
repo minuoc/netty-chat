@@ -1,5 +1,9 @@
 package com.chat.server;
 
+import com.chat.codec.PacketDecoder;
+import com.chat.codec.PacketEncoder;
+import com.chat.server.handler.LoginRequestHandler;
+import com.chat.server.handler.MessageRequestHandler;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
@@ -9,6 +13,7 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.util.AttributeKey;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
+import net.sf.cglib.proxy.Enhancer;
 
 /**
  * @author chenlufeng
@@ -21,6 +26,9 @@ public class NettyServer {
         NioEventLoopGroup workerGroup = new NioEventLoopGroup();
 
         final ServerBootstrap serverBootstrap = new ServerBootstrap();
+
+
+
         serverBootstrap
                 .group(bossGroup, workerGroup)
                 .channel(NioServerSocketChannel.class)
@@ -29,14 +37,10 @@ public class NettyServer {
                 .childOption(ChannelOption.TCP_NODELAY, true)
                 .childHandler(new ChannelInitializer<NioSocketChannel>() {
                     protected void initChannel(NioSocketChannel ch) {
-//                        ch.pipeline().addLast(new ServerHandler());
-                        ch.pipeline().addLast(new InBoundHandlerA());
-                        ch.pipeline().addLast(new InBoundHandlerB());
-                        ch.pipeline().addLast(new InBoundHandlerC());
-
-                        ch.pipeline().addLast(new OutBoundHandlerA());
-                        ch.pipeline().addLast(new OutBoundHandlerB());
-                        ch.pipeline().addLast(new OutBoundHandlerC());
+                        ch.pipeline().addLast(new PacketDecoder())
+                                .addLast(new LoginRequestHandler())
+                                .addLast(new MessageRequestHandler())
+                                .addLast(new PacketEncoder());
 
                     }
                 });
