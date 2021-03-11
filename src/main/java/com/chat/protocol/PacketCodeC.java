@@ -19,7 +19,7 @@ import static com.chat.protocol.command.Command.*;
  * @date 2021/3/8
  */
 public class PacketCodeC {
-    private static final int MAGIC_NUMBER = 0x12345678;
+    public static final int MAGIC_NUMBER = 0x12345678;
 
     public static final PacketCodeC INSTANCE = new PacketCodeC();
 
