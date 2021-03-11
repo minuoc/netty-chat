@@ -4,6 +4,7 @@ import com.chat.codec.PacketDecoder;
 import com.chat.codec.PacketEncoder;
 import com.chat.codec.Spliter;
 import com.chat.server.handler.FirstServerHandler;
+import com.chat.server.handler.LifeCycleTest;
 import com.chat.server.handler.LoginRequestHandler;
 import com.chat.server.handler.MessageRequestHandler;
 import io.netty.bootstrap.ServerBootstrap;
@@ -39,6 +40,7 @@ public class NettyServer {
                 .childOption(ChannelOption.TCP_NODELAY, true)
                 .childHandler(new ChannelInitializer<NioSocketChannel>() {
                     protected void initChannel(NioSocketChannel ch) {
+                        ch.pipeline().addLast(new LifeCycleTest());
                         ch.pipeline().addLast(new Spliter());
                         ch.pipeline().addLast(new PacketDecoder());
                         ch.pipeline().addLast(new LoginRequestHandler());
