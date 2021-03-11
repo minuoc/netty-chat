@@ -1,5 +1,6 @@
 package com.chat.client;
 
+import com.chat.client.handler.FirstClientHandler;
 import com.chat.protocol.PacketCodeC;
 import com.chat.protocol.request.MessageRequestPacket;
 import com.chat.util.LoginUtil;
@@ -37,7 +38,7 @@ public class NettyClient {
                 .handler(new ChannelInitializer<SocketChannel>() {
                     @Override
                     public void initChannel(SocketChannel ch) {
-                        ch.pipeline().addLast(new ClientHandler());
+                        ch.pipeline().addLast(new FirstClientHandler());
                     }
                 });
         connect(bootstrap,"127.0.0.1",8081,5);

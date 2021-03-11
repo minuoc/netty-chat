@@ -28,7 +28,6 @@ public class NettyServer {
         final ServerBootstrap serverBootstrap = new ServerBootstrap();
 
 
-
         serverBootstrap
                 .group(bossGroup, workerGroup)
                 .channel(NioServerSocketChannel.class)
@@ -37,11 +36,12 @@ public class NettyServer {
                 .childOption(ChannelOption.TCP_NODELAY, true)
                 .childHandler(new ChannelInitializer<NioSocketChannel>() {
                     protected void initChannel(NioSocketChannel ch) {
-                        ch.pipeline().addLast(new PacketDecoder())
-                                .addLast(new LoginRequestHandler())
-                                .addLast(new MessageRequestHandler())
-                                .addLast(new PacketEncoder());
+//                        ch.pipeline().addLast(new PacketDecoder())
+//                                .addLast(new LoginRequestHandler())
+//                                .addLast(new MessageRequestHandler())
+//                                .addLast(new PacketEncoder());
 
+                        ch.pipeline().addLast(new FirstServerHandler());
                     }
                 });
 
