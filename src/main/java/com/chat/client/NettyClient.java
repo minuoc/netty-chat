@@ -7,8 +7,10 @@ import com.chat.codec.PacketDecoder;
 import com.chat.codec.PacketEncoder;
 import com.chat.codec.Spliter;
 import com.chat.protocol.PacketCodeC;
+import com.chat.protocol.request.LoginRequestPacket;
 import com.chat.protocol.request.MessageRequestPacket;
 import com.chat.util.LoginUtil;
+import com.chat.util.SessionUtil;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
@@ -52,19 +54,19 @@ public class NettyClient {
 
                     }
                 });
-        connect(bootstrap,"127.0.0.1",8081,5);
+        connect(bootstrap, "127.0.0.1", 8081, 5);
 
     }
 
-    private static void connect(Bootstrap bootstrap,String host,int port,int retry){
-        bootstrap.connect(host,port).addListener(future -> {
+    private static void connect(Bootstrap bootstrap, String host, int port, int retry) {
+        bootstrap.connect(host, port).addListener(future -> {
             if (future.isSuccess()) {
                 System.out.println("连接成功！");
-                Channel channel = ((ChannelFuture)future).channel();
+                Channel channel = ((ChannelFuture) future).channel();
                 //连接成功之后，启动控制台线程
                 startConsoleThread(channel);
 
-            } else if(retry == 0){
+            } else if (retry == 0) {
                 System.err.println("重试次数已用完，放弃连接");
             } else {
                 //第几次重连
@@ -76,34 +78,52 @@ public class NettyClient {
                         "");
 
                 bootstrap.config().group().schedule(
-                        ()-> connect(bootstrap,host,port,retry - 1),delay, TimeUnit.SECONDS);
+                        () -> connect(bootstrap, host, port, retry - 1), delay, TimeUnit.SECONDS);
 
             }
         });
 
 
-
     }
 
     private static void startConsoleThread(Channel channel) {
-        new Thread(()->{
-            while (!Thread.interrupted()){
 
-//                if (LoginUtil.hasLogin(channel)){
-                    System.out.println("输入消息发送至服务端：");
-                    Scanner sc = new Scanner(System.in);
-                    String line = sc.nextLine();
+        Scanner sc = new Scanner(System.in);
+        LoginRequestPacket loginRequestPacket = new LoginRequestPacket();
 
-                    MessageRequestPacket packet = new MessageRequestPacket();
-                    packet.setMessage(line);
+        new Thread(() -> {
+            while (!Thread.interrupted()) {
 
-                    ByteBuf byteBuf = PacketCodeC.INSTANCE.encode(channel.alloc(),packet);
-                    channel.writeAndFlush(byteBuf);
-//                }
+                if (!SessionUtil.hasLogin(channel)) {
+                    System.out.println("输入用户名登录：");
+                    String username = sc.nextLine();
+                    loginRequestPacket.setUsername(username);
+                    //密码使用默认的
+
+                    loginRequestPacket.setPassword("pwd");
+
+                    //发送登录数据包
+                   channel.writeAndFlush(loginRequestPacket);
+                   waitForLoginResponse();
+                } else {
+                    String toUserId = sc.next();
+                    String message = sc.next();
+                    channel.writeAndFlush(new MessageRequestPacket(toUserId, message));
+                }
+
+
             }
         }).start();
 
 
+    }
+
+    private static void waitForLoginResponse() {
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e){
+
+        }
     }
 
 

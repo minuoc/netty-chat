@@ -12,7 +12,14 @@ import static com.chat.protocol.command.Command.MESSAGE_RESPONSE;
 @Data
 public class MessageResponsePacket extends Packet {
 
+    //发送消息用户的id
+    private String fromUserId;
+
+    private String fromUserName;
+
     private String message;
+
+
 
     @Override
     public Byte getCommand() {

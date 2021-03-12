@@ -3,7 +3,9 @@ package com.chat.client.handler;
 import com.chat.protocol.PacketCodeC;
 import com.chat.protocol.request.LoginRequestPacket;
 import com.chat.protocol.response.LoginResponsePacket;
+import com.chat.session.Session;
 import com.chat.util.LoginUtil;
+import com.chat.util.SessionUtil;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -18,26 +20,20 @@ import java.util.UUID;
 public class LoginResponseHandler extends SimpleChannelInboundHandler<LoginResponsePacket> {
 
     @Override
-    public void channelActive(ChannelHandlerContext ctx) {
-        // 创建登录对象
-        LoginRequestPacket loginRequestPacket = new LoginRequestPacket();
-        loginRequestPacket.setUserId(UUID.randomUUID().toString());
-        loginRequestPacket.setUsername("flash");
-        loginRequestPacket.setPassword("pwd");
+    protected void channelRead0(ChannelHandlerContext ctx, LoginResponsePacket packet) throws Exception {
+        String userId = packet.getUserId();
+        String userName = packet.getUserName();
 
-
-        // 写数据
-        ctx.channel().writeAndFlush(loginRequestPacket);
+        if (packet.isSuccess()){
+            System.out.println("[" + userName + "]登录成功，userId 为: " + packet.getUserId());
+            SessionUtil.bindSession(new Session(userId,userName),ctx.channel());
+        } else {
+            System.out.println("[" + userName + "] 登录失败 " + packet.getReason());
+        }
     }
 
-
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, LoginResponsePacket packet) throws Exception {
-        if (packet.isSuccess()){
-            System.out.println(new Date() + "客户端登录成功");
-            LoginUtil.markAsLogin(ctx.channel());
-        } else {
-            System.out.println(new Date() + "客户端登录失败，原因：" + packet.getReason());
-        }
+    public void channelInactive(ChannelHandlerContext ctx) {
+        System.out.println("客户端连接被关闭!");
     }
 }
