@@ -4,6 +4,7 @@ import com.chat.protocol.Packet;
 import com.chat.protocol.PacketCodeC;
 import com.chat.protocol.request.LoginRequestPacket;
 import com.chat.protocol.response.LoginResponsePacket;
+import com.chat.util.LoginUtil;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -30,6 +31,7 @@ public class LoginRequestHandler extends SimpleChannelInboundHandler<LoginReques
             //登录校验
             loginResponsePacket.setSuccess(true);
             System.out.println(new Date() + ": 登录成功!");
+            LoginUtil.markAsLogin(ctx.channel());
         } else {
             //校验失败
             loginResponsePacket.setSuccess(false);
