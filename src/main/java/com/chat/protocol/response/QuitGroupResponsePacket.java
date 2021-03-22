@@ -1,6 +1,7 @@
 package com.chat.protocol.response;
 
 import com.chat.protocol.Packet;
+import com.chat.protocol.command.Command;
 import lombok.Data;
 
 /**
@@ -18,6 +19,6 @@ public class QuitGroupResponsePacket extends Packet {
 
     @Override
     public Byte getCommand() {
-        return null;
+        return Command.QUIT_GROUP_RESPONSE;
     }
 }
