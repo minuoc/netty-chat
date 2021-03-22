@@ -1,9 +1,7 @@
 package com.chat.protocol;
 
-import com.chat.protocol.request.LoginRequestPacket;
-import com.chat.protocol.request.MessageRequestPacket;
-import com.chat.protocol.response.LoginResponsePacket;
-import com.chat.protocol.response.MessageResponsePacket;
+import com.chat.protocol.request.*;
+import com.chat.protocol.response.*;
 import com.chat.serialize.Serializer;
 import com.chat.serialize.impl.JSONSerializer;
 import io.netty.buffer.ByteBuf;
@@ -33,6 +31,12 @@ public class PacketCodeC {
         packetTypeMap.put(LOGIN_RESPONSE, LoginResponsePacket.class);
         packetTypeMap.put(MESSAGE_REQUEST, MessageRequestPacket.class);
         packetTypeMap.put(MESSAGE_RESPONSE, MessageResponsePacket.class);
+        packetTypeMap.put(CREATE_GROUP_REQUEST, CreateGroupRequestPacket.class);
+        packetTypeMap.put(CREATE_GROUP_RESPONSE, CreateGroupResponsePacket.class);
+        packetTypeMap.put(JOIN_GROUP_REQUEST, JoinGroupRequestPacket.class);
+        packetTypeMap.put(JOIN_GROUP_RESPONSE, JoinGroupResponsePacket.class);
+        packetTypeMap.put(QUIT_GROUP_REQUEST, QuitGroupRequestPacket.class);
+        packetTypeMap.put(QUIT_GROUP_RESPONSE, QuitGroupResponsePacket.class);
 
         serializerMap = new HashMap<>();
         Serializer serializer = new JSONSerializer();
