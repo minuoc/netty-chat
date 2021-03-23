@@ -48,10 +48,11 @@ public class NettyClient {
                         ch.pipeline().addLast(new JoinGroupResponseHandler());
                         ch.pipeline().addLast(new ListGroupMembersResponseHandler());
                         ch.pipeline().addLast(new QuitGroupResponseHandler());
+                        ch.pipeline().addLast(new GroupMessageResponseHandler());
                         ch.pipeline().addLast(new PacketEncoder());
                     }
                 });
-        connect(bootstrap, "127.0.0.1", 8083, 5);
+        connect(bootstrap, "127.0.0.1", 8081, 5);
 
     }
 
@@ -95,7 +96,6 @@ public class NettyClient {
                 }else {
                     consoleCommandManager.exec(sc,channel);
                 }
-
             }
         }).start();
 
