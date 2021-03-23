@@ -6,14 +6,8 @@ import com.chat.client.handler.*;
 import com.chat.codec.PacketDecoder;
 import com.chat.codec.PacketEncoder;
 import com.chat.codec.Spliter;
-import com.chat.protocol.PacketCodeC;
-import com.chat.protocol.request.LoginRequestPacket;
-import com.chat.protocol.request.MessageRequestPacket;
-import com.chat.protocol.response.CreateGroupResponsePacket;
-import com.chat.util.LoginUtil;
 import com.chat.util.SessionUtil;
 import io.netty.bootstrap.Bootstrap;
-import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -21,7 +15,6 @@ import io.netty.channel.ChannelOption;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 
 
 import java.util.Date;
@@ -53,11 +46,12 @@ public class NettyClient {
                         ch.pipeline().addLast(new MessageResponseHandler());
                         ch.pipeline().addLast(new CreateGroupResponseHandler());
                         ch.pipeline().addLast(new JoinGroupResponseHandler());
+                        ch.pipeline().addLast(new ListGroupMembersResponseHandler());
                         ch.pipeline().addLast(new QuitGroupResponseHandler());
                         ch.pipeline().addLast(new PacketEncoder());
                     }
                 });
-        connect(bootstrap, "127.0.0.1", 8081, 5);
+        connect(bootstrap, "127.0.0.1", 8083, 5);
 
     }
 
